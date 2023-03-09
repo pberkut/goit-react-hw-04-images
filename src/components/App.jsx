@@ -11,11 +11,11 @@ import { Error } from './Error';
 
 export const App = () => {
   const [query, setQuery] = useState('');
-  const [totalPages, setTotalPages] = useState(0);
   const [page, setPage] = useState(1);
   const [images, setImages] = useState([]);
-  const [error, setError] = useState(false);
+  const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('idle');
+  const [error, setError] = useState(false);
 
   useEffect(() => {
     if (query === '') {
