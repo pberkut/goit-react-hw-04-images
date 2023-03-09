@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
+import { fetchImagesWithQuery } from '../services/pixabay-API';
+import { handleFetchData } from '../utils/handleFetchData';
 import { Searchbar } from './Searchbar';
-import { fetchImagesWithQuery, handleFetchData } from '../services/pixabay-API';
+import { Loader } from './Loader';
 import { ImageGallery } from './ImageGallery';
 import { Button } from './Button';
-import { Loader } from './Loader';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Error } from './Error';
@@ -17,90 +18,63 @@ export const App = () => {
   const [status, setStatus] = useState('idle');
 
   useEffect(() => {
-    fetch1();
-  }, [query]);
+    if (query === '') {
+      return;
+    }
+
+    const fetch = async () => {
+      setStatus('pending');
+
+      try {
+        const data = await fetchImagesWithQuery(query, page);
+        if (data.images.length === 0) {
+          toast.info(`"${query}" not found images!`);
+          setStatus('notFoundImage');
+          return;
+        }
+
+        if (page === 1) {
+          toast.info(`You find ${data.totalImages} images!`);
+        }
+
+        const handleImages = handleFetchData(data.images);
+        setImages(prevImages => [...prevImages, ...handleImages]);
+
+        setStatus('resolved');
+        setTotalPages(data.totalPages);
+      } catch (error) {
+        setError(error);
+        setStatus('rejected');
+        toast.error(`Something went wrong`);
+      }
+    };
+
+    fetch();
+  }, [query, page]);
 
   useEffect(() => {
-    fetch2();
-  }, [page]);
-
-  // const fetch3 = async () => {};
-
-  const fetch1 = async () => {
-    // const { query, page } = this.state;
-
-    // this.setState({ status: 'pending', page: 1 });
-    setStatus('pending');
-    setPage(1);
-    try {
-      const data = await fetchImagesWithQuery(query, 1);
-
-      if (data.images.length === 0) {
-        toast.info(`"${query}" not found!`);
-
-        setImages([]);
-        setStatus('notFoundImage');
-        setTotalPages(0);
-        // return this.setState({
-        //   images: [],
-        //   status: 'notFoundImage',
-        //   totalPages: 0,
-        // });
-      }
-
-      const handleImages = handleFetchData(data.images);
-      setImages(handleImages);
-      setStatus('resolved');
-      setTotalPages(data.totalPages);
-      // this.setState({
-      //   images: handleImages,
-      //   status: 'resolved',
-      //   totalPages: data.totalPages,
-      // });
-    } catch (error) {
-      setError(error);
-      setStatus('rejected');
-      // this.setState({ error, status: 'rejected' });
-      toast.error(`Something went wrong`);
+    if (page === 1) {
+      return;
     }
-  };
-
-  const fetch2 = async () => {
-    setStatus('pending');
-    // this.setState({ status: 'pending' });
-    try {
-      const data = await fetchImagesWithQuery(query, page);
-      const handleImages = handleFetchData(data.images);
-
-      setImages(prevState => [...prevState, ...handleImages]);
-      setStatus('resolved');
-      setTotalPages(data.totalPages);
-      // this.setState(({ images }) => ({
-      //   images: [...images, ...handleImages],
-      //   status: 'resolved',
-      //   totalPages: data.totalPages,
-      // }));
-    } catch (error) {
-      setError(error);
-      setStatus('rejected');
-      // this.setState({ error, status: 'rejected' });
-      toast.error(`$Something went wrong`);
-    }
-  };
+    window.scrollTo({
+      top: document.body.scrollHeight,
+      behavior: 'smooth',
+    });
+  });
 
   const handleSubmit = query => {
     setQuery(query);
-    // this.setState({ query });
+    setImages([]);
+    setPage(1);
+    setTotalPages(0);
   };
 
   const handleLoadMore = () => {
-    setPage(prevState => prevState + 1);
-
-    // this.setState(prevState => ({
-    //   page: prevState.page + 1,
-    // }));
+    setPage(prevPage => prevPage + 1);
   };
+
   const availablePages = totalPages > page;
+
   return (
     <div>
       <Searchbar onSubmit={handleSubmit} />
@@ -112,87 +86,3 @@ export const App = () => {
     </div>
   );
 };
-
-// export class App extends Component {
-//   state = {
-//     query: '',
-//     totalPages: 0,
-//     page: 1,
-//     images: [],
-//     error: false,
-//     status: 'idle',
-//   };
-
-// async componentDidUpdate(_, prevState) {
-//   const { query, page } = this.state;
-
-//   if (prevState.query !== query) {
-//     this.setState({ status: 'pending', page: 1 });
-//     try {
-//       const data = await fetchImagesWithQuery(query, 1);
-
-//       if (data.images.length === 0) {
-//         toast.info(`"${query}" not found!`);
-
-//         return this.setState({
-//           images: [],
-//           status: 'notFoundImage',
-//           totalPages: 0,
-//         });
-//       }
-
-//       const handleImages = handleFetchData(data.images);
-//       this.setState({
-//         images: handleImages,
-//         status: 'resolved',
-//         totalPages: data.totalPages,
-//       });
-//     } catch (error) {
-//       this.setState({ error, status: 'rejected' });
-//       toast.error(`Something went wrong`);
-//     }
-//   }
-
-//   if (prevState.page !== page && page !== 1) {
-//     this.setState({ status: 'pending' });
-//     try {
-//       const data = await fetchImagesWithQuery(query, page);
-//       const handleImages = handleFetchData(data.images);
-//       this.setState(({ images }) => ({
-//         images: [...images, ...handleImages],
-//         status: 'resolved',
-//         totalPages: data.totalPages,
-//       }));
-//     } catch (error) {
-//       this.setState({ error, status: 'rejected' });
-//       toast.error(`$Something went wrong`);
-//     }
-//   }
-// }
-
-// handleSubmit = query => {
-//   this.setState({ query });
-// };
-
-// handleLoadMore = () => {
-//   this.setState(prevState => ({
-//     page: prevState.page + 1,
-//   }));
-// };
-
-//   render() {
-//     const { images, status, page, totalPages, error } = this.state;
-//     const availablePages = totalPages > page;
-
-// return (
-//   <div>
-//     <Searchbar onSubmit={this.handleSubmit} />
-//     {status === 'pending' && <Loader />}
-//     {images.length > 0 && <ImageGallery images={images} />}
-//     {availablePages && <Button onLoadMore={this.handleLoadMore} />}
-//     {status === 'rejected' && <Error error={error.message} />}
-//     <ToastContainer position="top-right" autoClose={1500} />
-//   </div>
-// );
-//   }
-// }

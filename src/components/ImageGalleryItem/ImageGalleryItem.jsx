@@ -1,35 +1,28 @@
-import { Modal } from 'components/Modal';
 import PropTypes from 'prop-types';
-import { Component } from 'react';
+import { useState } from 'react';
+import { Modal } from 'components/Modal';
 
-export class ImageGalleryItem extends Component {
-  state = {
-    showModal: false,
+export const ImageGalleryItem = ({ image }) => {
+  const [showModal, setShowModal] = useState(false);
+
+  const { webImgURL, tags } = image;
+
+  const toggleModal = () => {
+    setShowModal(showModal => !showModal);
   };
 
-  toggleModal = () => {
-    this.setState(({ showModal }) => ({
-      showModal: !showModal,
-    }));
-  };
-
-  render() {
-    const { tags, webImgURL } = this.props.image;
-    return (
-      <>
-        <img
-          className="imageGalleryItem-image"
-          src={webImgURL}
-          alt={tags}
-          onClick={() => this.setState({ showModal: true })}
-        />
-        {this.state.showModal && (
-          <Modal showImage={this.props.image} onClose={this.toggleModal} />
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <img
+        className="imageGalleryItem-image"
+        src={webImgURL}
+        alt={tags}
+        onClick={() => toggleModal()}
+      />
+      {showModal && <Modal showImage={image} onClose={() => toggleModal()} />}
+    </>
+  );
+};
 
 ImageGalleryItem.propTypes = {
   image: PropTypes.shape({

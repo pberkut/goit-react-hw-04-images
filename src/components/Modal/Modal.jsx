@@ -1,37 +1,53 @@
-import { Component } from 'react';
+import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 const modalRoot = document.getElementById('modal-root');
 
-export class Modal extends Component {
-  componentDidMount() {
-    window.addEventListener('keydown', this.handleKeyDown);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.handleKeyDown);
-  }
-
-  handleKeyDown = evt => {
-    if (evt.code === 'Escape') {
-      this.props.onClose();
-    }
-  };
-
-  handleBackdropClick = evt => {
+export const Modal = ({ showImage, onClose }) => {
+  const handleBackdropClick = evt => {
     if (evt.currentTarget === evt.target) {
-      this.props.onClose();
+      onClose();
     }
   };
-  render() {
-    const { showImage } = this.props;
-    return createPortal(
-      <div className="overlay" onClick={this.handleBackdropClick}>
-        <div className="modal">
-          <img src={showImage.lgImgURL} alt={showImage.tags} />
-        </div>
-      </div>,
-      modalRoot
-    );
-  }
-}
+
+  useEffect(() => {
+    const handleKeyDown = evt => {
+      if (evt.code === 'Escape') {
+        onClose();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [onClose]);
+
+  return createPortal(
+    <div className="overlay" onClick={handleBackdropClick}>
+      <div className="modal">
+        <button
+          type="button"
+          className="button"
+          onClick={() => {
+            onClose();
+          }}
+        >
+          X
+        </button>
+        <img src={showImage.lgImgURL} alt={showImage.tags} />
+      </div>
+    </div>,
+    modalRoot
+  );
+};
+
+Modal.propTypes = {
+  showImage: PropTypes.shape({
+    tags: PropTypes.string.isRequired,
+    lgImgURL: PropTypes.string.isRequired,
+  }),
+  onClose: PropTypes.func.isRequired,
+};

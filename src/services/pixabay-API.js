@@ -20,13 +20,11 @@ const fetchImagesWithQuery = async (searchQuery, page = 1) => {
   });
   const availablePages = Math.ceil(response.data.totalHits / PER_PAGE);
 
-  return { images: response.data.hits, totalPages: availablePages };
+  return {
+    images: response.data.hits,
+    totalImages: response.data.total,
+    totalPages: availablePages,
+  };
 };
 
-const handleFetchData = images => {
-  return images.map(({ id, tags, webformatURL, largeImageURL }) => {
-    return { id, tags, webImgURL: webformatURL, lgImgURL: largeImageURL };
-  });
-};
-
-export { fetchImagesWithQuery, handleFetchData };
+export { fetchImagesWithQuery };
