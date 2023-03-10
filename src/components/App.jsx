@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useLayoutEffect } from 'react';
 import { fetchImagesWithQuery } from '../services/pixabay-API';
 import { handleFetchData } from '../utils/handleFetchData';
 import { Searchbar } from './Searchbar';
@@ -52,7 +52,7 @@ export const App = () => {
     fetch();
   }, [query, page]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (page === 1) {
       return;
     }
