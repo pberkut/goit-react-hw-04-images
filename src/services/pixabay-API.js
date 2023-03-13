@@ -15,7 +15,6 @@ const fetchImagesWithQuery = async (searchQuery, page = 1, abortController) => {
     page,
   };
 
-  console.log(abortController.signal);
   const response = await axios.get(BASE_URL, {
     params: axiosParams,
     signal: abortController.signal,
