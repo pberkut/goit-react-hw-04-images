@@ -13,11 +13,12 @@ const fetchImagesWithQuery = async (searchQuery, page = 1, abortController) => {
     safesearch: true,
     per_page: PER_PAGE,
     page,
-    signal: abortController.signal,
   };
 
+  console.log(abortController.signal);
   const response = await axios.get(BASE_URL, {
     params: axiosParams,
+    signal: abortController.signal,
   });
   const availablePages = Math.ceil(response.data.totalHits / PER_PAGE);
 

@@ -55,7 +55,6 @@ export const App = () => {
 
     return () => {
       abortController.abort();
-      console.log(abortController);
     };
   }, [query, page]);
 
