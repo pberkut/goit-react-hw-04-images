@@ -4,7 +4,7 @@ const BASE_URL = `https://pixabay.com/api/`;
 const API_KEY = '32766360-76e7eba189222bd8a15da9e43';
 const PER_PAGE = 12;
 
-const fetchImagesWithQuery = async (searchQuery, page = 1) => {
+const fetchImagesWithQuery = async (searchQuery, page = 1, abortController) => {
   const axiosParams = {
     key: API_KEY,
     q: searchQuery,
@@ -13,6 +13,7 @@ const fetchImagesWithQuery = async (searchQuery, page = 1) => {
     safesearch: true,
     per_page: PER_PAGE,
     page,
+    signal: abortController.signal,
   };
 
   const response = await axios.get(BASE_URL, {

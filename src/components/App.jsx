@@ -22,11 +22,13 @@ export const App = () => {
       return;
     }
 
+    const abortController = new AbortController();
+
     const fetch = async () => {
       setStatus('pending');
 
       try {
-        const data = await fetchImagesWithQuery(query, page);
+        const data = await fetchImagesWithQuery(query, page, abortController);
         if (data.images.length === 0) {
           toast.info(`"${query}" not found images!`);
           setStatus('notFoundImage');
@@ -50,6 +52,11 @@ export const App = () => {
     };
 
     fetch();
+
+    return () => {
+      abortController.abort();
+      console.log(abortController);
+    };
   }, [query, page]);
 
   useLayoutEffect(() => {
