@@ -4,14 +4,13 @@ import { toast } from 'react-toastify';
 import searchIcon from '../../image/search.svg';
 
 export const Searchbar = ({ onSubmit }) => {
-  const handleSubmit = (values, { resetForm }) => {
+  const handleSubmit = values => {
     const { search } = values;
     const handleSearch = search.toLowerCase().trim();
     if (handleSearch === '') {
       return toast.warn('Enter query!');
     }
     onSubmit(handleSearch);
-    resetForm();
   };
 
   return (

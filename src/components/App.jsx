@@ -8,6 +8,7 @@ import { Button } from './Button';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Error } from './Error';
+import { nanoid } from 'nanoid';
 
 export const App = () => {
   const [query, setQuery] = useState('');
@@ -16,6 +17,7 @@ export const App = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(false);
+  const [requestId, setRequestId] = useState(null);
 
   useEffect(() => {
     if (query === '') {
@@ -56,7 +58,7 @@ export const App = () => {
     return () => {
       abortController.abort();
     };
-  }, [query, page]);
+  }, [query, page, requestId]);
 
   useLayoutEffect(() => {
     if (page === 1) {
@@ -73,6 +75,7 @@ export const App = () => {
     setImages([]);
     setPage(1);
     setTotalPages(0);
+    setRequestId(nanoid(1));
   };
 
   const handleLoadMore = () => {
